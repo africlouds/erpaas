@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include saas *.css
+recursive-include saas *.csv
+recursive-include saas *.html
+recursive-include saas *.ico
+recursive-include saas *.js
+recursive-include saas *.json
+recursive-include saas *.md
+recursive-include saas *.png
+recursive-include saas *.py
+recursive-include saas *.svg
+recursive-include saas *.txt
+recursive-exclude saas *.pyc

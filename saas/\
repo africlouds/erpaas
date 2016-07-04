@@ -1,0 +1,39 @@
+import frappe
+from frappe import _
+import string
+import random
+
+
+def id_generator(size=50, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
+	return ''.join(random.SystemRandom().choice(chars) for _ in range(size))
+
+
+@frappe.whitelist()
+def send_invitation_emails(site):
+	site = frappe.get_doc("Site", site)
+	site.check_permission("email")
+
+	if site.status == "Pending Approval":
+		site.email_verification_code = id_generator()
+		frappe.sendmail(
+			recipients = [site.email],
+			sender=frappe.session.user,
+			subject="Validate your account",
+			message = "Please validate your email, click on this link: http://saas.erp/api/method/saas.api.verify_account?name=%s&code=%s" % (site.name,site.email_verification_code),
+			reference_doctype=site.doctype,
+			reference_name=site.name
+		)
+		site.status = "Email Sent"
+		site.save()
+		frappe.msgprint(_("Confirmation emails sent"))
+	else:
+		frappe.msgprint(_("Site Status must be 'Pending Approval'"))
+
+
+@frappe.whitelist(allow_guest=True)
+def confirm_account(name, code):
+	site = frappe.get_doc("Site", name)
+	if site.email_verification_code == code:
+		return "Kool" 
+	else:
+		return "Wapi"
