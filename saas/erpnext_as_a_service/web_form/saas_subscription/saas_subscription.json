@@ -1,0 +1,57 @@
+{
+ "allow_comments": 0, 
+ "allow_delete": 0, 
+ "allow_edit": 0, 
+ "allow_multiple": 0, 
+ "creation": "2016-07-07 13:15:12.458469", 
+ "doc_type": "Site", 
+ "docstatus": 0, 
+ "doctype": "Web Form", 
+ "idx": 0, 
+ "is_standard": 1, 
+ "login_required": 0, 
+ "modified": "2016-07-07 14:28:07.801768", 
+ "modified_by": "Administrator", 
+ "module": "ERPNext as a Service", 
+ "name": "saas-subscription", 
+ "owner": "Administrator", 
+ "published": 1, 
+ "route": "signup", 
+ "success_url": "/signup", 
+ "title": "SaaS Subscription", 
+ "web_form_fields": [
+  {
+   "fieldname": "title", 
+   "fieldtype": "Data", 
+   "hidden": 0, 
+   "label": "Site Name", 
+   "read_only": 0, 
+   "reqd": 1
+  }, 
+  {
+   "fieldname": "customer_name", 
+   "fieldtype": "Data", 
+   "hidden": 0, 
+   "label": "Customer Name", 
+   "read_only": 0, 
+   "reqd": 1
+  }, 
+  {
+   "fieldname": "email", 
+   "fieldtype": "Data", 
+   "hidden": 0, 
+   "label": "Email", 
+   "options": "Email", 
+   "read_only": 0, 
+   "reqd": 0
+  }, 
+  {
+   "fieldname": "telephone", 
+   "fieldtype": "Data", 
+   "hidden": 0, 
+   "label": "Telephone", 
+   "read_only": 0, 
+   "reqd": 1
+  }
+ ]
+}

@@ -15,7 +15,7 @@ def delete_account(doc, method):
 
 def notify_user(doc, method):
 	site = frappe.get_doc("Site", doc.name)
-	site.check_permission("email")
+	#site.check_permission("email")
 
 	if site.status == "Pending Approval":
 		site.email_verification_code = id_generator()
@@ -28,11 +28,25 @@ def notify_user(doc, method):
 			reference_name=site.name
 		)
 		site.status = "Email Sent"
-		site.save()
+		site.save(ignore_permissions=True)
+		frappe.db.commit()
 		frappe.msgprint(_("Confirmation emails sent"))
 	else:
 		frappe.msgprint(_("Site Status must be 'Pending Approval'"))
 
+
+@frappe.whitelist(allow_guest=True)
+def signup(email, domain_name, _type='POST'):
+	site = frappe.get_doc({
+		"doctype": "Site",
+		"title": domain_name,
+		"customer_name": domain_name,
+		"status": "Pending Approval",
+		"email": email,
+		"telephone": email
+	})
+	site.insert(ignore_permissions=True)
+	frappe.db.commit()
 
 @frappe.whitelist(allow_guest=True)
 def verify_account(name, code):
@@ -41,9 +55,10 @@ def verify_account(name, code):
 		return "The site does not need verification"
 	if site.email_verification_code == code:
 		site.status = "Site Verified"
-		site.flags.ignore_permissions = True
-		site.save()
+		site.save(ignore_permissions=True)
+		frappe.db.commit()
 		enqueue(create_site, site=site.name)
+		return "OK"
 	else:
 		return "Wapi"
 
@@ -55,7 +70,10 @@ def create_site(site):
                                             stdin=subprocess.PIPE,
                                             cwd="/home/frappe/frappe-bench")
         out,err = p.communicate()
-	if not err:
+	#if not err:
+
+	# TO DO
+	if True:
 		"""Create an orientation meeting when a new User is added"""
 		lead = frappe.get_doc({
 			"doctype": "Lead",
@@ -64,8 +82,8 @@ def create_site(site):
 			"status": "Lead"
 		})
 		# the System Manager might not have permission to create a Meeting
-		lead.flags.ignore_permissions = True
-		lead.insert()
+		lead.insert(ignore_permissions=True)
+		frappe.db.commit()
 		frappe.sendmail(
 			recipients = [site.email],
 			sender="arwema@gmail.com",
@@ -83,7 +101,7 @@ def delete_site(site):
                                             stdin=subprocess.PIPE,
                                             cwd="/home/frappe/frappe-bench")
         out,err = p.communicate()
-	if not err:
+	if True:
 		frappe.sendmail(
 			recipients = [site.email],
 			sender="arwema@gmail.com",
@@ -92,10 +110,10 @@ def delete_site(site):
 			reference_doctype=site.doctype,
 			reference_name=site.name
 		)
-		lead = frappe.get_doc("Lead", site.title)
-		lead.flags.ignore_permissions = True
-		lead.status = "Do Not Contact"
-		lead.save()
+		#lead = frappe.get_doc("Lead", site.title)
+		#lead.status = "Do Not Contact"
+		#lead.save(ignore_permissions=True)
+		#frappe.db.commit()
 	
 
 
