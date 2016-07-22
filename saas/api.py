@@ -23,7 +23,7 @@ def notify_user(doc, method):
 			recipients = [site.email],
 			sender='arwema@gmail.com',
 			subject="Validate your account",
-			message = "Please validate your email, click on this link: http://%s/api/method/saas.api.verify_account?name=%s&code=%s" % (site.domain_name,site.name,site.email_verification_code),
+			message = "Please validate your email, click on this link: http://%s/api/method/saas.api.verify_account?name=%s&code=%s" % (site.customer_name,site.name,site.email_verification_code),
 			reference_doctype=site.doctype,
 			reference_name=site.name
 		)
