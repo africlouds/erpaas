@@ -21,7 +21,7 @@ def notify_user(doc, method):
 		site.email_verification_code = id_generator()
 		frappe.sendmail(
 			recipients = [site.email],
-			sender='arwema@africlouds.com',
+			sender='erp@intego.rw',
 			subject="Validate your account",
 			message = "Please validate your email, click on this link: http://%s/api/method/saas.api.verify_account?name=%s&code=%s" % (site.customer_name,site.name,site.email_verification_code),
 			reference_doctype=site.doctype,
@@ -98,7 +98,7 @@ def create_site2(site):
 		frappe.db.commit()
 		frappe.sendmail(
 			recipients = [site.email],
-			sender="arwema@africlouds.com",
+			sender="erp@intego.rw",
 			subject="Your ERP Account",
 			message = "Dear Customer, your account has been create and accessible from: http://%s:8000" % (site.title),
 			reference_doctype=site.doctype,
@@ -116,7 +116,7 @@ def delete_site(site):
 	if True:
 		frappe.sendmail(
 			recipients = [site.email],
-			sender="arwema@africlouds.com",
+			sender="erp@intego.rw",
 			subject="Your ERP Account Terminated",
 			message = "Dear Customer, your account has been terminated",
 			reference_doctype=site.doctype,
