@@ -23,7 +23,7 @@ def notify_user(doc, method):
 			recipients = [site.email],
 			sender='erp@intego.rw',
 			subject="Validate your account",
-			message = "Please validate your email, click on this link: http://%s/api/method/saas.api.verify_account?name=%s&code=%s" % (site.customer_name,site.name,site.email_verification_code),
+			message = "Please validate your email, click on this link: http://intego.rw/api/method/saas.api.verify_account?name=%s&code=%s" % (site.name,site.email_verification_code),
 			reference_doctype=site.doctype,
 			reference_name=site.name
 		)
@@ -100,7 +100,7 @@ def create_site2(site):
 			recipients = [site.email],
 			sender="erp@intego.rw",
 			subject="Your ERP Account",
-			message = "Dear Customer, your account has been create and accessible from: http://%s:8000" % (site.title),
+			message = "Dear Customer, your account has been create and accessible from: http://%s" % (site.title),
 			reference_doctype=site.doctype,
 			reference_name=site.name
 		)
