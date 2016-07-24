@@ -30,13 +30,13 @@ def notify_user(doc, method):
 		site.status = "Email Sent"
 		site.save(ignore_permissions=True)
 		frappe.db.commit()
-		frappe.msgprint(_("Confirmation emails sent"))
+		#frappe.msgprint(_("Confirmation emails sent"))
 	else:
 		frappe.msgprint(_("Site Status must be 'Pending Approval'"))
 
 
 @frappe.whitelist(allow_guest=True)
-def signup(email, telephone, domain_name, _type='POST'):
+def signup(email, domain_name, telephone="",_type='POST'):
 	site = frappe.get_doc({
 		"doctype": "Site",
 		"title": domain_name,
@@ -47,35 +47,58 @@ def signup(email, telephone, domain_name, _type='POST'):
 	})
 	site.insert(ignore_permissions=True)
 	frappe.db.commit()
+	return {
+		"location": frappe.redirect_to_message(_('Confirm Email'),"Thank you for registering. Check your email to complete registration")
+	}
 
 @frappe.whitelist(allow_guest=True)
 def verify_account(name, code):
 	site = frappe.get_doc("Site", name)
+	if not site:
+		return {
+				"location": frappe.redirect_to_message(_('Verification Error'),"<p class='text-danger'>Invalid Site Name!</p>")
+			}
 	if site.status != "Email Sent":
-		return "The site does not need verification"
+		return {
+				"location": frappe.redirect_to_message(_('Verification Error'),"<p class='text-danger'>Code arlead used!</p>")
+			}
 	if site.email_verification_code == code:
 		site.status = "Site Verified"
 		site.save(ignore_permissions=True)
 		frappe.db.commit()
-		enqueue(create_site2, site=site.name)
-		return "OK"
+		return  {
+				"location": frappe.redirect_to_message(_('Site Verified'),"Site successfully verified! Continue to <a href='/setup?name="+site.name+"&code="+site.email_verification_code+"'><strong>Setup</strong></a>")
+			} 
 	else:
-		return "Wapi"
+		return {
+			"location": frappe.redirect_to_message(_('Verification Error'),"<p class='text-danger'>Invalid Code!</p>")
+		}
 
-def new_site(site_name):
-	enqueue(create_site, site_name=site_name)
+@frappe.whitelist(allow_guest=True)
+def setup_account(name, telephone, business_name, password, domain):
+	site = frappe.get_doc("Site", name)
+	site.business_name = business_name
+	site.telephone = telephone
+	site.domain = domain
+	site.save(ignore_permissions=True)
+	frappe.db.commit()
+	enqueue(create_site, site=site, admin_password=password)
+	if site.domain == "custom":
+		location = "Congatulations! Your website has been setup. You will shortly receive email with login details"
+	else:
+		location = "Congatulations! Your website has been setup. <a href='http://"+site.title+"'>Login</a>" 
+	return {
+			"location": frappe.redirect_to_message(_('Website Setup'), location)
+	}
 
-def create_site(site_name):
-        cmd = ["bench", "new-site", "--db-name", site_name, "--mariadb-root-username", "root", "--mariadb-root-password", 'frappe', "--admin-password", site_name, "--source_sql","/home/frappe/intego.sql",site_name]
-        p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
-                                            stderr=subprocess.PIPE,
-                                            stdin=subprocess.PIPE,
-                                            cwd="/home/frappe/frappe-bench")
-        out,err = p.communicate()
 
-def create_site2(site):
-        site = frappe.get_doc("Site", site)
-        cmd = ["bench", "new-site", "--db-name", site.name, "--mariadb-root-username", "root", "--mariadb-root-password", 'frappe', "--admin-password", "logic", "--install-app", "erpnext", site.title]
+
+def create_site(site, admin_password):
+	if site.domain == "custom":
+        	cmd = ["bench", "new-site", "--db-name", site.name, "--mariadb-root-username", "root", "--mariadb-root-password", 'frappe', "--admin-password", admin_password, "--install-app", "erpnext", site.title]
+	else:
+        	cmd = ["bench", "new-site", "--db-name", site.name, "--mariadb-root-username", "root", "--mariadb-root-password", 'frappe', "--admin-password", admin_password, "--source_sql","/home/frappe/"+site.domain+".sql",site.title]
+	
 
         p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
                                             stderr=subprocess.PIPE,
