@@ -110,6 +110,18 @@ def create_site(site, admin_password):
 
 	# TO DO
 	if True:
+        	cmd = ["bench", "set-ssl-certificate", site.name, "/etc/nginx/ssl/server.crt"]
+        	p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
+                                            stderr=subprocess.PIPE,
+                                            stdin=subprocess.PIPE,
+                                            cwd="/home/frappe/frappe-bench")
+        	out,err = p.communicate()
+        	cmd = ["bench", "set-ssl-key", site.name, "/etc/nginx/ssl/server.key"]
+        	p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
+                                            stderr=subprocess.PIPE,
+                                            stdin=subprocess.PIPE,
+                                            cwd="/home/frappe/frappe-bench")
+        	out,err = p.communicate()
 		lead = frappe.get_doc({
 			"doctype": "Lead",
 			"lead_name": site.title,
