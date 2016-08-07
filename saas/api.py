@@ -135,7 +135,7 @@ def create_site(site, admin_password):
 			recipients = [site.email],
 			sender="erp@intego.rw",
 			subject="Your ERP Account",
-			message = "Dear Customer, your account has been create and accessible from: http://%s" % (site.title),
+			message = "Dear Customer, your account has been create and accessible from: https://%s" % (site.title),
 			reference_doctype=site.doctype,
 			reference_name=site.name
 		)
