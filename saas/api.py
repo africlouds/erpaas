@@ -23,7 +23,7 @@ def notify_user(doc, method):
 			recipients = [site.email],
 			sender='erp@intego.rw',
 			subject="Validate your account",
-			message = "Please validate your email, click on this link: http://intego.rw/api/method/saas.api.verify_account?name=%s&code=%s" % (site.name,site.email_verification_code),
+			message = "Please validate your email, click on this link: https://intego.rw/api/method/saas.api.verify_account?name=%s&code=%s" % (site.name,site.email_verification_code),
 			reference_doctype=site.doctype,
 			reference_name=site.name
 		)
@@ -110,13 +110,13 @@ def create_site(site, admin_password):
 
 	# TO DO
 	if True:
-        	cmd = ["bench", "set-ssl-certificate", site.name, "/etc/nginx/ssl/server.crt"]
+        	cmd = ["bench", "set-ssl-certificate", site.title, "/etc/nginx/ssl/server.crt"]
         	p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
                                             stderr=subprocess.PIPE,
                                             stdin=subprocess.PIPE,
                                             cwd="/home/frappe/frappe-bench")
         	out,err = p.communicate()
-        	cmd = ["bench", "set-ssl-key", site.name, "/etc/nginx/ssl/server.key"]
+        	cmd = ["bench", "set-ssl-key", site.title, "/etc/nginx/ssl/server.key"]
         	p = subprocess.Popen(cmd, stdout = subprocess.PIPE,
                                             stderr=subprocess.PIPE,
                                             stdin=subprocess.PIPE,
